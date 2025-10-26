@@ -19,15 +19,28 @@
       <div class="dato">d<sub>max</sub>: <span id="dmax">0</span></div>
     </div>
 
+    <!-- ===== BRÚJULA ===== -->
     <div class="columna">
-      <div class="brujula">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Compass_rose_spanish_north.svg/1024px-Compass_rose_spanish_north.svg.png" alt="Brújula">
+      <div class="widget" data-sensor="orientacion">
+        <h3>Brújula Digital</h3>
+        <div class="navigation-container">
+          <div class="nav-compass-ring">
+            <div class="nav-directions">
+              <span>N</span><span>E</span><span>S</span><span>O</span>
+            </div>
+            <div class="nav-needle"></div>
+            <div class="nav-center-dot"></div>
+          </div>
+          <p class="nav-readout">Dirección: <span id="nav-direction-text">--</span></p>
+        </div>
       </div>
     </div>
   </main>
 
+  <!-- Imagen del ESP32-CAM -->
   <img id="streamImage" src="http://192.168.243.10/capture" alt="ESP32-CAM">
 
+  <!-- Modal -->
   <div id="imageModal" class="modal">
     <div class="modal-content">
       <span class="close-btn" id="closeModal">&times;</span>
