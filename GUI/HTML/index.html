@@ -4,172 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Automatización del Interferómetro de Michelson-Morley</title>
-  <style>
-    body {
-      background-color: #0b0b0b;
-      color: #f2f2f2;
-      font-family: "Segoe UI", Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      text-align: center;
-      padding: 30px 10px 10px;
-      background: linear-gradient(90deg, #00ccff33, #0066ff33);
-      border-bottom: 2px solid #00ccff;
-      box-shadow: 0 0 15px #00ccff33;
-    }
-
-    header h1 {
-      font-size: 2em;
-      margin: 0;
-      color: #00ccff;
-    }
-
-    header h2 {
-      font-size: 1em;
-      font-weight: normal;
-      margin: 5px 0 0;
-      color: #cccccc;
-    }
-
-    main {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      gap: 40px;
-      padding: 30px 10px;
-    }
-
-    .columna {
-      background-color: #1a1a1a;
-      border: 2px solid #00ccff44;
-      border-radius: 15px;
-      padding: 20px;
-      width: 280px;
-      box-shadow: 0 0 20px #00ccff22;
-      transition: 0.3s;
-    }
-
-    .columna:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 25px #00ccff55;
-    }
-
-    .dato {
-      font-size: 1.1em;
-      margin: 15px 0;
-    }
-
-    .dato span {
-      color: #00ccff;
-      font-weight: bold;
-    }
-
-    .brujula {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
-
-    .brujula img {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 2px solid #00ccff;
-      box-shadow: 0 0 10px #00ccff55;
-    }
-
-    #streamImage {
-      display: block;
-      margin: 30px auto;
-      border: 3px solid #00ccff;
-      border-radius: 10px;
-      max-width: 90%;
-      height: auto;
-      box-shadow: 0 0 25px #00ccff55;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    #streamImage:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 40px #00ccff88;
-    }
-
-    /* --- Modal --- */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 10;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-    }
-
-    .modal-content {
-      position: relative;
-      width: 95%;
-      height: 95%;
-      max-width: 1800px;
-      max-height: 95%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 3px solid #00ccff;
-      border-radius: 15px;
-      background-color: #000;
-      box-shadow: 0 0 60px #00ccff88;
-      animation: zoomIn 0.3s ease;
-    }
-
-    .modal-content img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border-radius: 12px;
-    }
-
-    @keyframes zoomIn {
-      from { transform: scale(0.6); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      color: #fff;
-      font-size: 40px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: color 0.3s;
-      text-shadow: 0 0 10px #000;
-    }
-
-    .close-btn:hover {
-      color: #00ccff;
-    }
-
-    footer {
-      text-align: center;
-      color: #777;
-      padding: 20px;
-      font-size: 0.9em;
-    }
-  </style>
+  <link rel="stylesheet" href="../CSS/styles.css">
+  <script src="../JAVASCRIPT/scripts.js" defer></script>
 </head>
 <body>
   <header>
     <h1>Automatización del Interferómetro de Michelson-Morley</h1>
-    <h2>Realizado por: Gabriela Rodríguez y Miguel Roa</h2>
+    <h2>Desarrollado por: Gabriela Rodríguez y Miguel Roa</h2>
   </header>
 
   <main>
@@ -185,10 +26,8 @@
     </div>
   </main>
 
-  <!-- Imagen del ESP32 -->
   <img id="streamImage" src="http://192.168.243.10/capture" alt="ESP32-CAM">
 
-  <!-- Modal -->
   <div id="imageModal" class="modal">
     <div class="modal-content">
       <span class="close-btn" id="closeModal">&times;</span>
@@ -196,42 +35,12 @@
     </div>
   </div>
 
+  <div class="shutdown-container">
+    <button id="shutdown-btn">Apagar Interfaz</button>
+  </div>
+
   <footer>
     &copy; 2025 Proyecto de Automatización Experimental
   </footer>
-
-  <script>
-    function refreshImage() {
-      const img = document.getElementById('streamImage');
-      const timestamp = new Date().getTime();
-      img.src = 'http://192.168.243.10/capture?_=' + timestamp;
-    }
-
-    setInterval(refreshImage, 1000);
-
-    // --- Modal ---
-    const streamImage = document.getElementById('streamImage');
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImg');
-    const closeModal = document.getElementById('closeModal');
-
-    // Abrir modal al hacer clic
-    streamImage.onclick = function() {
-      modal.style.display = 'flex';
-      modalImg.src = this.src;
-    }
-
-    // Cerrar modal al hacer clic en la X
-    closeModal.onclick = function() {
-      modal.style.display = 'none';
-    }
-
-    // Cerrar modal al hacer clic fuera de la imagen
-    modal.onclick = function(e) {
-      if (e.target === modal) {
-        modal.style.display = 'none';
-      }
-    }
-  </script>
 </body>
 </html>
