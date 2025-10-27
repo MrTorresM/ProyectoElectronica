@@ -19,7 +19,7 @@ float offsetX = 0, offsetY = 0;
 unsigned long lastSend = 0;
 const unsigned long SEND_INTERVAL = 200;  // cada 200 ms
 
-// ======== Methods Definition ========
+// ======== Métodos ========
 void readRawMag();
 float getHeadingDegrees(float x, float y);
 
@@ -28,14 +28,15 @@ void setup() {
   delay(500);
   Serial.println("\n=== Iniciando Lectura del Magnetómetro HMC5883L ===");
 
-  // Inicializar I2C
-  Wire.begin(21, 22);
-  Wire.setClock(400000UL);
+  // Inicializar bus I2C (pines por defecto del Arduino UNO)
+  Wire.begin();               // Usa A4 (SDA) y A5 (SCL)
+  Wire.setClock(400000UL);    // I2C rápido (400 kHz)
 
   // Configurar el HMC5883L
   Wire.beginTransmission(HMC_ADDR);
-  Wire.write(REG_CONF_A); Wire.write(0x70);  // 8 samples @15Hz
+  Wire.write(REG_CONF_A); Wire.write(0x70);  // 8 muestras @15Hz
   Wire.endTransmission();
+
   Wire.beginTransmission(HMC_ADDR);
   Wire.write(REG_CONF_B); Wire.write(0xA0);  // ±5.6 Gauss
   Wire.endTransmission();
@@ -49,9 +50,17 @@ void setup() {
     minY = min(minY, rawY); maxY = max(maxY, rawY);
     delay(100);
   }
+
   offsetX = (maxX + minX) / 2.0f;
   offsetY = (maxY + minY) / 2.0f;
-  Serial.printf("> Calibración completa. Offsets: X=%.1f, Y=%.1f\n", offsetX, offsetY);
+
+  // ✅ Reemplazo de Serial.printf
+  Serial.print("> Calibración completa. Offsets: X=");
+  Serial.print(offsetX, 1);
+  Serial.print(", Y=");
+  Serial.print(offsetY, 1);
+  Serial.println();
+
   Serial.println("=== Lectura continua iniciada ===\n");
 }
 
@@ -65,6 +74,13 @@ void loop() {
     float y = rawY - offsetY;
     float heading = getHeadingDegrees(x, y);
 
+    // 🧭 Impresión legible en el monitor serie
+    Serial.print("X: "); Serial.print(rawX);
+    Serial.print(" | Y: "); Serial.print(rawY);
+    Serial.print(" | Z: "); Serial.print(rawZ);
+    Serial.print(" | Heading: "); Serial.print(heading, 2);
+    Serial.println("°");
+
     // Crear JSON
     StaticJsonDocument<256> doc;
     JsonObject mag = doc.createNestedObject("magnetometro");
@@ -73,9 +89,7 @@ void loop() {
     mag["z_raw"] = rawZ;
     mag["heading_deg"] = heading;
 
-    // doc["otro sensor"] = valor;
-
-    // Serializar y enviar por puerto físico (USB)
+    // Enviar JSON al puerto serie (para tu interfaz o depuración)
     serializeJson(doc, Serial);
     Serial.println();
   }
